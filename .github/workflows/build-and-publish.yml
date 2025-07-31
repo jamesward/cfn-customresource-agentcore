@@ -1,0 +1,30 @@
+name: Build and Publish Container
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Login to GitHub Package Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: buildpacks/github-actions/setup-pack@v5.0.0
+
+      # todo: support tags
+      - name: Build & Publish Image
+        run: pack build --builder=heroku/builder:24 --publish ghcr.io/${{ github.repository }}
