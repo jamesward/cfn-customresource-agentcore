@@ -22,7 +22,7 @@ def find_agent_runtime_id(target_arn) -> Optional[str]:
         None
     )
 
-    return matching_runtime['agentRuntimeId']
+    return matching_runtime['agentRuntimeId'] if matching_runtime else None
 
 def conform_name(name: str) -> str:
     # If empty or None, raise exception
@@ -97,32 +97,32 @@ def update(event, context):
 
     if maybe_agent_runtime_id is None:
         raise Exception(f"Could not find agent runtime with id {resource_id}")
-    else:
-        container_uri = event['ResourceProperties']['ContainerUri']
-        role_arn = event['ResourceProperties']['RoleArn']
-        server_protocol = event['ResourceProperties']['ServerProtocol']
 
-        response = client.update_agent_runtime(
-            agentRuntimeId=maybe_agent_runtime_id,
-            agentRuntimeArtifact={
-                'containerConfiguration': {
-                    'containerUri': container_uri
-                }
-            },
-            roleArn=role_arn,
-            networkConfiguration={
-                'networkMode': 'PUBLIC'
-            },
-            protocolConfiguration={
-                'serverProtocol': server_protocol
-            },
-        )
+    container_uri = event['ResourceProperties']['ContainerUri']
+    role_arn = event['ResourceProperties']['RoleArn']
+    server_protocol = event['ResourceProperties']['ServerProtocol']
 
-        print(response)
+    response = client.update_agent_runtime(
+        agentRuntimeId=maybe_agent_runtime_id,
+        agentRuntimeArtifact={
+            'containerConfiguration': {
+                'containerUri': container_uri
+            }
+        },
+        roleArn=role_arn,
+        networkConfiguration={
+            'networkMode': 'PUBLIC'
+        },
+        protocolConfiguration={
+            'serverProtocol': server_protocol
+        },
+    )
 
-        # todo: use status
+    print(response)
 
-        return response['agentRuntimeArn']
+    # todo: use status
+
+    return response['agentRuntimeArn']
 
 @helper.delete
 def delete(event, context):
@@ -132,13 +132,10 @@ def delete(event, context):
 
     maybe_agent_runtime_id = find_agent_runtime_id(resource_id)
 
-    if maybe_agent_runtime_id is None:
-        raise Exception(f"Could not find agent runtime with id {resource_id}")
-    else:
-        client.delete_agent_runtime(agentRuntimeId=maybe_agent_runtime_id)
+    client.delete_agent_runtime(agentRuntimeId=maybe_agent_runtime_id) if maybe_agent_runtime_id else None
 
-        # todo: handle status
-        # 'status': 'CREATING'|'CREATE_FAILED'|'UPDATING'|'UPDATE_FAILED'|'READY'|'DELETING'
+    # todo: handle status
+    # 'status': 'CREATING'|'CREATE_FAILED'|'UPDATING'|'UPDATE_FAILED'|'READY'|'DELETING'
 
 
 def handler(event, context):
