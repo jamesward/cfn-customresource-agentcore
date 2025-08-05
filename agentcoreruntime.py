@@ -24,11 +24,32 @@ def find_agent_runtime_id(target_arn) -> Optional[str]:
 
     return matching_runtime['agentRuntimeId']
 
+def conform_name(name: str) -> str:
+    # If empty or None, raise exception
+    if not name:
+        raise ValueError("Name cannot be empty")
+
+    # Convert to string if not already
+    name = str(name)
+
+    # Replace any character that's not alphanumeric or underscore with underscore
+    name = ''.join(c if c.isalnum() or c == '_' else '_' for c in name)
+
+    # Ensure it starts with a letter
+    if not name[0].isalpha():
+        name = 'a' + name
+
+    # Truncate to maximum length
+    name = name[:48]
+
+    return name
+
+
 @helper.create
 def create(event, context):
     logger.info(f"Received event: {event}")
 
-    name = event['LogicalResourceId']
+    name = conform_name(event['LogicalResourceId'])
     container_uri = event['ResourceProperties']['ContainerUri']
     role_arn = event['ResourceProperties']['RoleArn']
     server_protocol = event['ResourceProperties']['ServerProtocol']
