@@ -53,6 +53,7 @@ def create(event, context):
     container_uri = event['ResourceProperties']['ContainerUri']
     role_arn = event['ResourceProperties']['RoleArn']
     server_protocol = event['ResourceProperties']['ServerProtocol']
+    discovery_url = event['ResourceProperties']['DiscoveryUrl']
 
     response = client.create_agent_runtime(
         agentRuntimeName=name,
@@ -67,7 +68,12 @@ def create(event, context):
         networkConfiguration={
             "networkMode":"PUBLIC"
         },
-        roleArn=role_arn
+        roleArn=role_arn,
+        authorizerConfiguration={
+            'customJWTAuthorizer': {
+                'discoveryUrl': discovery_url,
+            }
+        }
     )
 
     print(response)
@@ -101,6 +107,7 @@ def update(event, context):
     container_uri = event['ResourceProperties']['ContainerUri']
     role_arn = event['ResourceProperties']['RoleArn']
     server_protocol = event['ResourceProperties']['ServerProtocol']
+    discovery_url = event['ResourceProperties']['DiscoveryUrl']
 
     response = client.update_agent_runtime(
         agentRuntimeId=maybe_agent_runtime_id,
@@ -116,6 +123,11 @@ def update(event, context):
         protocolConfiguration={
             'serverProtocol': server_protocol
         },
+        authorizerConfiguration={
+            'customJWTAuthorizer': {
+                'discoveryUrl': discovery_url,
+            }
+        }
     )
 
     print(response)
