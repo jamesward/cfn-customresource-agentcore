@@ -53,8 +53,7 @@ def create(event, context):
     container_uri = event['ResourceProperties']['ContainerUri']
     role_arn = event['ResourceProperties']['RoleArn']
     server_protocol = event['ResourceProperties']['ServerProtocol']
-    discovery_url = event['ResourceProperties']['DiscoveryUrl']
-    allowed_client = event['ResourceProperties']['AllowedClient']
+    authorizerConfiguration = event['ResourceProperties'].get('AuthorizerConfiguration', {})
     env = event['ResourceProperties'].get('Env', {})
 
     response = client.create_agent_runtime(
@@ -71,14 +70,7 @@ def create(event, context):
             "networkMode":"PUBLIC"
         },
         roleArn=role_arn,
-        authorizerConfiguration={
-            'customJWTAuthorizer': {
-                'discoveryUrl': discovery_url,
-                'allowedClients': [
-                    allowed_client
-                ]
-            }
-        },
+        authorizerConfiguration=authorizerConfiguration,
         environmentVariables=env,
     )
 
@@ -113,8 +105,7 @@ def update(event, context):
     container_uri = event['ResourceProperties']['ContainerUri']
     role_arn = event['ResourceProperties']['RoleArn']
     server_protocol = event['ResourceProperties']['ServerProtocol']
-    discovery_url = event['ResourceProperties']['DiscoveryUrl']
-    allowed_client = event['ResourceProperties']['AllowedClient']
+    authorizerConfiguration = event['ResourceProperties'].get('AuthorizerConfiguration', {})
     env = event['ResourceProperties'].get('Env', {})
 
     response = client.update_agent_runtime(
@@ -131,14 +122,7 @@ def update(event, context):
         protocolConfiguration={
             'serverProtocol': server_protocol
         },
-        authorizerConfiguration={
-            'customJWTAuthorizer': {
-                'discoveryUrl': discovery_url,
-                'allowedClients': [
-                    allowed_client
-                ]
-            }
-        },
+        authorizerConfiguration=authorizerConfiguration,
         environmentVariables=env,
     )
 
