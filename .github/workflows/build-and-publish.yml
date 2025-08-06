@@ -27,4 +27,4 @@ jobs:
 
       # todo: support tags
       - name: Build & Publish Image
-        run: pack build --builder=heroku/builder:24 --publish ghcr.io/${{ github.repository }}
+        run: pack build --builder=heroku/builder:24 --publish ghcr.io/${{ github.repository }}:${GITHUB_SHA::7}
