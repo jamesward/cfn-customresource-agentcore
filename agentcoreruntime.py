@@ -53,7 +53,7 @@ def create(event, context):
     container_uri = event['ResourceProperties']['ContainerUri']
     role_arn = event['ResourceProperties']['RoleArn']
     server_protocol = event['ResourceProperties']['ServerProtocol']
-    authorizerConfiguration = event['ResourceProperties'].get('AuthorizerConfiguration', {})
+    authorizerConfiguration = event['ResourceProperties'].get('AuthorizerConfiguration', None)
     env = event['ResourceProperties'].get('Env', {})
 
     response = client.create_agent_runtime(
@@ -70,7 +70,7 @@ def create(event, context):
             "networkMode":"PUBLIC"
         },
         roleArn=role_arn,
-        authorizerConfiguration=authorizerConfiguration,
+        **({} if authorizerConfiguration is None else {"authorizerConfiguration": authorizerConfiguration}),
         environmentVariables=env,
     )
 
@@ -105,7 +105,7 @@ def update(event, context):
     container_uri = event['ResourceProperties']['ContainerUri']
     role_arn = event['ResourceProperties']['RoleArn']
     server_protocol = event['ResourceProperties']['ServerProtocol']
-    authorizerConfiguration = event['ResourceProperties'].get('AuthorizerConfiguration', {})
+    authorizerConfiguration = event['ResourceProperties'].get('AuthorizerConfiguration', None)
     env = event['ResourceProperties'].get('Env', {})
 
     response = client.update_agent_runtime(
@@ -122,7 +122,7 @@ def update(event, context):
         protocolConfiguration={
             'serverProtocol': server_protocol
         },
-        authorizerConfiguration=authorizerConfiguration,
+        **({} if authorizerConfiguration is None else {"authorizerConfiguration": authorizerConfiguration}),
         environmentVariables=env,
     )
 
