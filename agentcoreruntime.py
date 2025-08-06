@@ -55,6 +55,7 @@ def create(event, context):
     server_protocol = event['ResourceProperties']['ServerProtocol']
     discovery_url = event['ResourceProperties']['DiscoveryUrl']
     allowed_client = event['ResourceProperties']['AllowedClient']
+    env = event['ResourceProperties']['Env']
 
     response = client.create_agent_runtime(
         agentRuntimeName=name,
@@ -77,7 +78,8 @@ def create(event, context):
                     allowed_client
                 ]
             }
-        }
+        },
+        environmentVariables=env,
     )
 
     print(response)
@@ -113,6 +115,7 @@ def update(event, context):
     server_protocol = event['ResourceProperties']['ServerProtocol']
     discovery_url = event['ResourceProperties']['DiscoveryUrl']
     allowed_client = event['ResourceProperties']['AllowedClient']
+    env = event['ResourceProperties']['Env']
 
     response = client.update_agent_runtime(
         agentRuntimeId=maybe_agent_runtime_id,
@@ -135,7 +138,8 @@ def update(event, context):
                     allowed_client
                 ]
             }
-        }
+        },
+        environmentVariables=env,
     )
 
     print(response)
